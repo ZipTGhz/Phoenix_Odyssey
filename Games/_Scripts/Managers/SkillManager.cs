@@ -6,14 +6,12 @@ public class SkillManager : MonoBehaviour
 {
     public static SkillManager Instance { get; private set; }
 
+    int _numOfSkills = 4;
+
     //SYSTEM
-    Animator animator;
-
-    int numOfSkills = 4;
-
-    //STATUS INFO
-    PlayerStatus playerStatus;
-    AnimatorStateInfo stateInfo;
+    public Animator PlayerAnimator;
+    public PlayerStatus PlayerStatus;
+    AnimatorStateInfo _stateInfo;
 
     //SKILL
     [SerializeField]
@@ -60,19 +58,12 @@ public class SkillManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            SetupSystemComponent();
             SetupAllSkill();
         }
         else
         {
             Debug.LogError("More than one instance of Skill Manager!");
         }
-    }
-
-    void SetupSystemComponent()
-    {
-        playerStatus = GetComponent<PlayerStatus>();
-        animator = GetComponentInChildren<Animator>();
     }
 
     void SetupAllSkill()
@@ -98,7 +89,7 @@ public class SkillManager : MonoBehaviour
     {
         float currentTime = Time.time;
         //if cooldown is done, you can use the skill
-        for (int i = 0; i < numOfSkills; ++i)
+        for (int i = 0; i < _numOfSkills; ++i)
         {
             CheckSkill(i, currentTime);
         }
@@ -109,22 +100,22 @@ public class SkillManager : MonoBehaviour
         Skill curSkill = skillList[index];
         if (curSkill.isSkillPresses && currentTime >= curSkill.nextSkillTimes)
         {
-            stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-            if (curSkill.skillInfoSO.CanDoSkill(playerStatus.CurrentMana) && IsFreeAnimationState())
+            _stateInfo = PlayerAnimator.GetCurrentAnimatorStateInfo(0);
+            if (curSkill.skillInfoSO.CanDoSkill(PlayerStatus.CurrentMana) && IsFreeAnimationState())
             {
                 switch (curSkill.skillType)
                 {
                     case SkillType.AutoAttack:
-                        animator.SetTrigger("Attack");
+                        PlayerAnimator.SetTrigger("Attack");
                         break;
                     case SkillType.FirstSkill:
-                        animator.SetTrigger("Skill");
+                        PlayerAnimator.SetTrigger("Skill");
                         break;
                     case SkillType.SecondSkill:
-                        animator.SetTrigger("Skill");
+                        PlayerAnimator.SetTrigger("Skill");
                         break;
                     case SkillType.UltimateSkill:
-                        animator.SetTrigger("Skill");
+                        PlayerAnimator.SetTrigger("Skill");
                         break;
                 }
                 curSkill.nextSkillTimes = currentTime + curSkill.skillInfoSO.skillCoolDown;
@@ -134,7 +125,7 @@ public class SkillManager : MonoBehaviour
 
     bool IsFreeAnimationState()
     {
-        return stateInfo.IsName("Player_Idle") || stateInfo.IsName("Player_Run");
+        return _stateInfo.IsName("Player_Idle") || _stateInfo.IsName("Player_Run");
     }
 }
 

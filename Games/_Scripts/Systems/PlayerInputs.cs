@@ -52,7 +52,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""initialStateCheck"": false
                 },
                 {
                     ""name"": ""Crouch"",
@@ -61,7 +61,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""initialStateCheck"": false
                 },
                 {
                     ""name"": ""Strike"",
@@ -70,7 +70,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""initialStateCheck"": false
                 },
                 {
                     ""name"": ""FirstSkill"",
@@ -79,7 +79,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""initialStateCheck"": false
                 },
                 {
                     ""name"": ""SecondSkill"",
@@ -88,7 +88,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""initialStateCheck"": false
                 },
                 {
                     ""name"": ""UltimateSkill"",
@@ -97,7 +97,16 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""2346fa65-741a-4da1-ab97-a19879cf38e4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -243,6 +252,17 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""action"": ""UltimateSkill"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""07fff19a-5954-4924-97af-6c535ad97666"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -259,6 +279,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         m_Gameplay_FirstSkill = m_Gameplay.FindAction("FirstSkill", throwIfNotFound: true);
         m_Gameplay_SecondSkill = m_Gameplay.FindAction("SecondSkill", throwIfNotFound: true);
         m_Gameplay_UltimateSkill = m_Gameplay.FindAction("UltimateSkill", throwIfNotFound: true);
+        m_Gameplay_Pause = m_Gameplay.FindAction("Pause", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -328,6 +349,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_FirstSkill;
     private readonly InputAction m_Gameplay_SecondSkill;
     private readonly InputAction m_Gameplay_UltimateSkill;
+    private readonly InputAction m_Gameplay_Pause;
     public struct GameplayActions
     {
         private @PlayerInputs m_Wrapper;
@@ -340,6 +362,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         public InputAction @FirstSkill => m_Wrapper.m_Gameplay_FirstSkill;
         public InputAction @SecondSkill => m_Wrapper.m_Gameplay_SecondSkill;
         public InputAction @UltimateSkill => m_Wrapper.m_Gameplay_UltimateSkill;
+        public InputAction @Pause => m_Wrapper.m_Gameplay_Pause;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -373,6 +396,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @UltimateSkill.started += instance.OnUltimateSkill;
             @UltimateSkill.performed += instance.OnUltimateSkill;
             @UltimateSkill.canceled += instance.OnUltimateSkill;
+            @Pause.started += instance.OnPause;
+            @Pause.performed += instance.OnPause;
+            @Pause.canceled += instance.OnPause;
         }
 
         private void UnregisterCallbacks(IGameplayActions instance)
@@ -401,6 +427,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @UltimateSkill.started -= instance.OnUltimateSkill;
             @UltimateSkill.performed -= instance.OnUltimateSkill;
             @UltimateSkill.canceled -= instance.OnUltimateSkill;
+            @Pause.started -= instance.OnPause;
+            @Pause.performed -= instance.OnPause;
+            @Pause.canceled -= instance.OnPause;
         }
 
         public void RemoveCallbacks(IGameplayActions instance)
@@ -428,5 +457,6 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         void OnFirstSkill(InputAction.CallbackContext context);
         void OnSecondSkill(InputAction.CallbackContext context);
         void OnUltimateSkill(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
     }
 }

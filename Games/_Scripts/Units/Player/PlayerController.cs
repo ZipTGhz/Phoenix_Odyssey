@@ -14,19 +14,21 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        SetupComponent();
+        Setup();
+        OnCustomEnable();
     }
 
-    void SetupComponent()
+    void Setup()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
     }
 
-    void OnEnable()
+    void OnCustomEnable()
     {
         InputManager.Instance.Input.Gameplay.Movement.performed += OnMovement;
         InputManager.Instance.Input.Gameplay.Movement.canceled += OnMovement;
+
         InputManager.Instance.Input.Gameplay.Attack.performed += OnAutoAttack;
         InputManager.Instance.Input.Gameplay.Attack.canceled += OnAutoAttack;
 
@@ -38,13 +40,15 @@ public class PlayerController : MonoBehaviour
 
         InputManager.Instance.Input.Gameplay.UltimateSkill.performed += OnUltimateSkill;
         InputManager.Instance.Input.Gameplay.UltimateSkill.canceled += OnUltimateSkill;
-        InputManager.Instance.Input.Enable();
+
+        InputManager.Instance.Input.Gameplay.Pause.performed += OnPause;
     }
 
     void OnDisable()
     {
         InputManager.Instance.Input.Gameplay.Movement.performed -= OnMovement;
         InputManager.Instance.Input.Gameplay.Movement.canceled -= OnMovement;
+
         InputManager.Instance.Input.Gameplay.Attack.performed -= OnAutoAttack;
         InputManager.Instance.Input.Gameplay.Attack.canceled -= OnAutoAttack;
 
@@ -56,7 +60,8 @@ public class PlayerController : MonoBehaviour
 
         InputManager.Instance.Input.Gameplay.UltimateSkill.performed -= OnUltimateSkill;
         InputManager.Instance.Input.Gameplay.UltimateSkill.canceled -= OnUltimateSkill;
-        InputManager.Instance.Input.Disable();
+
+        InputManager.Instance.Input.Gameplay.Pause.performed -= OnPause;
     }
 
     private void OnMovement(InputAction.CallbackContext context)
@@ -90,7 +95,12 @@ public class PlayerController : MonoBehaviour
         SkillManager.Instance.SkillList[index].isSkillPresses = context.ReadValueAsButton();
     }
 
-    private void Flip()
+    void OnPause(InputAction.CallbackContext context)
+    {
+        GameManager.Instance.ChangeState(GameState.Paused);
+    }
+
+    void Flip()
     {
         if (_Direction.x == 0)
             return;
@@ -101,7 +111,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         rb.AddForce(_Direction * _MoveSpeed);
     }

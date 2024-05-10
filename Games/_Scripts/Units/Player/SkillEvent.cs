@@ -21,18 +21,18 @@ public class SkillEvent : MonoBehaviour
 
     void DoAutoAttack()
     {
+        var skillInfo = SkillManager.Instance.SkillList[0].skillInfoSO;
+        var range = skillInfo.meleeAttackRange;
+        var damage = skillInfo.skillDamage;
+
         //Detect all enemies in range of attack
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(
-            attackPoint.position,
-            SkillManager.Instance.GetSkill((int)SkillType.AutoAttack).meleeAttackRange,
-            targetLayer
-        );
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(attackPoint.position, range, targetLayer);
 
         //Damage them
         foreach (Collider2D enemy in enemies)
         {
             EnemyStatus e = enemy.GetComponentInChildren<EnemyStatus>();
-            e.TakeDamage(skillManager.GetSkill((int)SkillType.AutoAttack).skillDamage);
+            e.TakeDamage(damage);
         }
     }
 
