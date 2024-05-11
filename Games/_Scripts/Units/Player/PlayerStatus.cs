@@ -1,27 +1,26 @@
+using System;
 using UnityEngine;
 
 public class PlayerStatus : EntityStatus
 {
-    //SYSTEM
-    public GameObject gameOverCanvas;
-
     //STATUS SLIDER & STATUS INFO
-    public StatusBarSlider manaBarSlider;
+    public StatusBarSlider ManaBarSlider;
+    public StatusBarSlider ExpBarSlider;
 
     [SerializeField]
-    int maxMana = 10;
-    int currentMana;
+    int _maxMana = 10;
+    int _currentMana;
     public int CurrentMana
     {
-        get => currentMana;
+        get => _currentMana;
     }
 
     protected override void Start()
     {
         base.Start();
 
-        currentMana = maxMana;
-        manaBarSlider.SetMaxValue(maxMana);
+        _currentMana = _maxMana;
+        ManaBarSlider.SetMaxValue(_maxMana);
     }
 
     protected override void Hurt()
@@ -34,9 +33,11 @@ public class PlayerStatus : EntityStatus
 
     public void UseMana(int mana)
     {
-        currentMana -= mana;
-        manaBarSlider.SetNewValue(currentMana);
+        _currentMana -= mana;
+        ManaBarSlider.SetNewValue(_currentMana);
     }
+
+    public void gainExp(int exp) { }
 
     protected override void Die()
     {
@@ -45,6 +46,6 @@ public class PlayerStatus : EntityStatus
         //Disable player
         //Destroy player
         Destroy(gameObject);
-        gameOverCanvas.SetActive(true);
+        GameManager.Instance.ChangeState(GameState.GameOver);
     }
 }

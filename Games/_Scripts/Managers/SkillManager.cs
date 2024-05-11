@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //MANAGE ALL SKILLS
-public class SkillManager : MonoBehaviour
+public class SkillManager : CustomMonoBehaviour
 {
     public static SkillManager Instance { get; private set; }
 
@@ -53,12 +53,13 @@ public class SkillManager : MonoBehaviour
         get => skillList;
     }
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         if (Instance == null)
         {
             Instance = this;
-            SetupAllSkill();
+            LoadAllSkill();
         }
         else
         {
@@ -66,7 +67,7 @@ public class SkillManager : MonoBehaviour
         }
     }
 
-    void SetupAllSkill()
+    void LoadAllSkill()
     {
         SetupSkill(SkillType.AutoAttack, _autoAttack);
         SetupSkill(SkillType.FirstSkill, _firstSkill);

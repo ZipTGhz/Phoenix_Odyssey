@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 7756709698144129500}
   - component: {fileID: 7723496757893126249}
   - component: {fileID: 2639994251263579216}
-  - component: {fileID: 7184037061018989926}
+  - component: {fileID: 5004160162206617885}
   - component: {fileID: 16875360526470430}
   m_Layer: 7
   m_Name: Player
@@ -140,7 +140,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.30509675, y: 0.54517984}
   m_EdgeRadius: 0
---- !u!114 &7184037061018989926
+--- !u!114 &5004160162206617885
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a90667b155c47e445a833d63a6a3c3af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _MoveSpeed: 30
 --- !u!114 &16875360526470430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,10 +166,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthBarSlider: {fileID: 0}
-  maxHealth: 999
-  gameOverCanvas: {fileID: 0}
-  manaBarSlider: {fileID: 0}
-  maxMana: 999
+  maxHealth: 10
+  ManaBarSlider: {fileID: 0}
+  ExpBarSlider: {fileID: 0}
+  _maxMana: 10
 --- !u!1 &7356271198004139541
 GameObject:
   m_ObjectHideFlags: 0

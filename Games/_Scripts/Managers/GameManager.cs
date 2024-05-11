@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 //chi quan ly trong scene
 public class GameManager : MonoBehaviour
@@ -36,6 +35,7 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.Paused:
                 Debug.Log("Game paused");
+                HandlePaused();
                 // Hiển thị menu tạm dừng
                 break;
             case GameState.Quest:
@@ -68,6 +68,11 @@ public class GameManager : MonoBehaviour
                 break;
         }
         OnStateChanged?.Invoke(newState);
+    }
+
+    private void HandlePaused()
+    {
+        //Do something
     }
 
     private void HandlePlaying()

@@ -10,7 +10,7 @@ public class SkillEvent : MonoBehaviour
     LayerMask targetLayer;
 
     [SerializeField]
-    ObjectPooler fireBallPooler;
+    // ObjectPooler fireBallPooler;
 
     PlayerStatus playerStatus;
 
@@ -36,16 +36,16 @@ public class SkillEvent : MonoBehaviour
         }
     }
 
-    void DoSkill()
-    {
-        //Spawn a fire ball
-        fireBallPooler
-            .GetPooledObject()
-            .GetComponent<FireBall>()
-            .SetActive(attackPoint.position, attackPoint.rotation, 3, 30);
-        // Instantiate(fireBallPrefab, attackPoint.position, attackPoint.rotation);
-        playerStatus.UseMana(1);
-    }
+    // void DoSkill()
+    // {
+    //     //Spawn a fire ball
+    //     fireBallPooler
+    //         .GetPooledObject()
+    //         .GetComponent<FireBall>()
+    //         .SetActive(attackPoint.position, attackPoint.rotation, 3, 30);
+    //     // Instantiate(fireBallPrefab, attackPoint.position, attackPoint.rotation);
+    //     playerStatus.UseMana(1);
+    // }
 
     void DoFirstSkill() { }
 

@@ -1,22 +1,40 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPooler : MonoBehaviour
+public class ObjectPoolerBase : CustomMonoBehaviour
 {
     //INFO
-    public GameObject prefab;
-    public bool fixedSize;
-    public int poolSize;
+    [SerializeField]
+    GameObject _prefab;
+
+    [SerializeField]
+    bool _fixedSize;
+
+    [SerializeField]
+    int _poolSize;
 
     //MANAGER
+    [SerializeReference]
     List<GameObject> pooledObjects;
 
-    void Start()
+    protected override void LoadComponents()
     {
-        pooledObjects = new List<GameObject>();
-        for (int i = 0; i < poolSize; ++i)
+        base.LoadComponents();
+        SetupObjectPooler();
+    }
+
+    private void SetupObjectPooler()
+    {
+        if (pooledObjects != null)
         {
-            GameObject obj = Instantiate(prefab);
+            Debug.LogWarning("Please reset" + transform.name, gameObject);
+            return;
+        }
+        pooledObjects = new List<GameObject>();
+        for (int i = 0; i < _poolSize; ++i)
+        {
+            GameObject obj = Instantiate(_prefab);
             obj.SetActive(false);
             pooledObjects.Add(obj);
         }
@@ -29,9 +47,9 @@ public class ObjectPooler : MonoBehaviour
             if (gameObject.activeInHierarchy == false)
                 return gameObject;
         }
-        if (fixedSize)
+        if (_fixedSize)
             return null;
-        GameObject obj = Instantiate(prefab);
+        GameObject obj = Instantiate(_prefab);
         obj.SetActive(false);
         pooledObjects.Add(obj);
         return obj;

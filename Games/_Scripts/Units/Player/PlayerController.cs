@@ -1,118 +1,52 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : CustomMonoBehaviour
 {
     //SYSTEM
-    Rigidbody2D rb;
-    Animator animator;
+    Rigidbody2D _rb;
+    Animator _animator;
 
     //MOVEMENT
-    Vector2 _Direction;
-    public float _MoveSpeed = 30f;
-    bool isFacingRight = true;
+    [SerializeField]
+    float _moveSpeed = 1500;
 
-    void Start()
+    Vector2 _direction;
+    bool _isFacingRight = true;
+
+    protected override void LoadComponents()
     {
-        Setup();
-        OnCustomEnable();
-    }
-
-    void Setup()
-    {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponentInChildren<Animator>();
-    }
-
-    void OnCustomEnable()
-    {
-        InputManager.Instance.Input.Gameplay.Movement.performed += OnMovement;
-        InputManager.Instance.Input.Gameplay.Movement.canceled += OnMovement;
-
-        InputManager.Instance.Input.Gameplay.Attack.performed += OnAutoAttack;
-        InputManager.Instance.Input.Gameplay.Attack.canceled += OnAutoAttack;
-
-        InputManager.Instance.Input.Gameplay.FirstSkill.performed += OnFirstSkill;
-        InputManager.Instance.Input.Gameplay.FirstSkill.canceled += OnFirstSkill;
-
-        InputManager.Instance.Input.Gameplay.SecondSkill.performed += OnSecondSkill;
-        InputManager.Instance.Input.Gameplay.SecondSkill.canceled += OnSecondSkill;
-
-        InputManager.Instance.Input.Gameplay.UltimateSkill.performed += OnUltimateSkill;
-        InputManager.Instance.Input.Gameplay.UltimateSkill.canceled += OnUltimateSkill;
-
-        InputManager.Instance.Input.Gameplay.Pause.performed += OnPause;
-    }
-
-    void OnDisable()
-    {
-        InputManager.Instance.Input.Gameplay.Movement.performed -= OnMovement;
-        InputManager.Instance.Input.Gameplay.Movement.canceled -= OnMovement;
-
-        InputManager.Instance.Input.Gameplay.Attack.performed -= OnAutoAttack;
-        InputManager.Instance.Input.Gameplay.Attack.canceled -= OnAutoAttack;
-
-        InputManager.Instance.Input.Gameplay.FirstSkill.performed -= OnFirstSkill;
-        InputManager.Instance.Input.Gameplay.FirstSkill.canceled -= OnFirstSkill;
-
-        InputManager.Instance.Input.Gameplay.SecondSkill.performed -= OnSecondSkill;
-        InputManager.Instance.Input.Gameplay.SecondSkill.canceled -= OnSecondSkill;
-
-        InputManager.Instance.Input.Gameplay.UltimateSkill.performed -= OnUltimateSkill;
-        InputManager.Instance.Input.Gameplay.UltimateSkill.canceled -= OnUltimateSkill;
-
-        InputManager.Instance.Input.Gameplay.Pause.performed -= OnPause;
-    }
-
-    private void OnMovement(InputAction.CallbackContext context)
-    {
-        _Direction = context.ReadValue<Vector2>();
-        animator.SetFloat("MoveSpeed", _Direction.magnitude);
-        Flip();
-    }
-
-    private void OnAutoAttack(InputAction.CallbackContext context)
-    {
-        int index = (int)SkillType.AutoAttack;
-        SkillManager.Instance.SkillList[index].isSkillPresses = context.ReadValueAsButton();
-    }
-
-    void OnFirstSkill(InputAction.CallbackContext context)
-    {
-        int index = (int)SkillType.FirstSkill;
-        SkillManager.Instance.SkillList[index].isSkillPresses = context.ReadValueAsButton();
-    }
-
-    void OnSecondSkill(InputAction.CallbackContext context)
-    {
-        int index = (int)SkillType.SecondSkill;
-        SkillManager.Instance.SkillList[index].isSkillPresses = context.ReadValueAsButton();
-    }
-
-    void OnUltimateSkill(InputAction.CallbackContext context)
-    {
-        int index = (int)SkillType.UltimateSkill;
-        SkillManager.Instance.SkillList[index].isSkillPresses = context.ReadValueAsButton();
-    }
-
-    void OnPause(InputAction.CallbackContext context)
-    {
-        GameManager.Instance.ChangeState(GameState.Paused);
-    }
-
-    void Flip()
-    {
-        if (_Direction.x == 0)
+        if (_rb || _animator)
             return;
-        if (_Direction.x < 0 && isFacingRight || _Direction.x > 0 && !isFacingRight)
-        {
-            isFacingRight = !isFacingRight;
-            transform.Rotate(0, 180, 0);
-        }
+
+        _rb = GetComponent<Rigidbody2D>();
+        _animator = GetComponentInChildren<Animator>();
+        Debug.Log(transform.name, gameObject);
     }
 
     void FixedUpdate()
     {
-        rb.AddForce(_Direction * _MoveSpeed);
+        GetDirection();
+        Move();
+        Flip();
+    }
+
+    void GetDirection()
+    {
+        _direction = InputManager.Instance.MoveDirection;
+    }
+
+    void Move()
+    {
+        _rb.AddForce(_direction * _moveSpeed * Time.fixedDeltaTime);
+        _animator.SetFloat("MoveSpeed", _direction.magnitude);
+    }
+
+    void Flip()
+    {
+        if (_direction.x < 0 && _isFacingRight || _direction.x > 0 && !_isFacingRight)
+        {
+            _isFacingRight = !_isFacingRight;
+            transform.Rotate(0, 180, 0);
+        }
     }
 }
