@@ -1,28 +1,25 @@
 using UnityEngine;
 
-public abstract class EntityStatus : MonoBehaviour
+public abstract class EntityStatus : CustomMonoBehaviour
 {
-    //SYSTEM
-    Animator _animator;
+    [Header("COMPONENTS")]
+    [SerializeField]
+    protected Animator _animator;
 
-    //STATUS SLIDER & STATUS INFO
-    public StatusBarSlider healthBarSlider;
-    public float maxHealth = 100f;
-    float _currentHealth;
+    [Header("STATUS SLIDER & STATUS INFO")]
+    [SerializeField]
+    protected StatusBarSlider _healthBarSlider;
+
+    [SerializeField]
+    protected float _maxHealth = 100f;
+
+    protected float _currentHealth;
     public float CurrentHealth
     {
         get => _currentHealth;
     }
 
-    protected virtual void Awake()
-    {
-        LoadComponents();
-    }
 
-    private void LoadComponents()
-    {
-        _animator = GetComponentInChildren<Animator>();
-    }
 
     protected virtual void Start()
     {
@@ -31,8 +28,8 @@ public abstract class EntityStatus : MonoBehaviour
 
     public void SetDefaultInfo()
     {
-        _currentHealth = maxHealth;
-        healthBarSlider.SetMaxValue(maxHealth);
+        _currentHealth = _maxHealth;
+        _healthBarSlider.SetMaxValue(_maxHealth);
     }
 
     public Animator GetAnimator()
@@ -44,7 +41,7 @@ public abstract class EntityStatus : MonoBehaviour
     {
         //Set new hp value
         _currentHealth -= damage;
-        healthBarSlider.SetNewValue(_currentHealth);
+        _healthBarSlider.SetNewValue(_currentHealth);
 
         // Play hurt animation
         Hurt();

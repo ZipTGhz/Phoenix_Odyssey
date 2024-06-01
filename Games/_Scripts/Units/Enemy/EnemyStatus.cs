@@ -2,31 +2,26 @@ using UnityEngine;
 
 public class EnemyStatus : EntityStatus
 {
-	//SYSTEM
-	Enemy enemy;
-	EnemyAI ai;
+    //SYSTEM
+    EnemyController enemyController;
 
-	protected override void Start()
-	{
-		base.Start();
-		enemy = GetComponent<Enemy>();
-		ai = GetComponent<EnemyAI>();
-	}
+    protected override void LoadComponents()
+    {
+        _animator = GetComponentInChildren<Animator>();
+        _healthBarSlider = GetComponentInChildren<StatusBarSlider>();
+    }
 
-	protected override void Die()
-	{
-		base.Die();
+    protected override void Start()
+    {
+        base.Start();
+        enemyController = GetComponent<EnemyController>();
+    }
 
-		// Disable the enemy and hide object
-		Disable();
-	}
+    protected override void Die()
+    {
+        base.Die();
 
-	void Disable()
-	{
-		enemy.StatusObjectUI.SetActive(false);
-		ai.enabled = false;
-		GetComponent<Collider2D>().enabled = false;
-		this.enabled = false;
-		GetComponentInParent<LifeTimeDisabler>().DelayedDisable();
-	}
+        // Disable the enemy and hide object
+        enemyController.SetDeactivate();
+    }
 }

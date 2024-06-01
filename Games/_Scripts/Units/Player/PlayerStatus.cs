@@ -3,9 +3,12 @@ using UnityEngine;
 
 public class PlayerStatus : EntityStatus
 {
-    //STATUS SLIDER & STATUS INFO
-    public StatusBarSlider ManaBarSlider;
-    public StatusBarSlider ExpBarSlider;
+    [Header("STATUS SLIDER & STATUS INFO")]
+    [SerializeField]
+    StatusBarSlider _manaBarSlider;
+
+    [SerializeField]
+    StatusBarSlider _expBarSlider;
 
     [SerializeField]
     int _maxMana = 10;
@@ -15,12 +18,26 @@ public class PlayerStatus : EntityStatus
         get => _currentMana;
     }
 
+    protected override void LoadComponents()
+    {
+        _animator = GetComponentInChildren<Animator>();
+        _healthBarSlider = GameObject.FindWithTag("HealthBarOverlay").GetComponent<StatusBarSlider>();
+        _manaBarSlider = GameObject.FindWithTag("ManaBarOverlay").GetComponent<StatusBarSlider>();
+    }
+
+    protected override void LoadDefaultValue()
+    {
+        base.LoadDefaultValue();
+        _maxHealth = 999;
+        _maxMana = 999;
+    }
+
     protected override void Start()
     {
         base.Start();
 
         _currentMana = _maxMana;
-        ManaBarSlider.SetMaxValue(_maxMana);
+        _manaBarSlider.SetMaxValue(_maxMana);
     }
 
     protected override void Hurt()
@@ -34,7 +51,7 @@ public class PlayerStatus : EntityStatus
     public void UseMana(int mana)
     {
         _currentMana -= mana;
-        ManaBarSlider.SetNewValue(_currentMana);
+        _manaBarSlider.SetNewValue(_currentMana);
     }
 
     public void gainExp(int exp) { }

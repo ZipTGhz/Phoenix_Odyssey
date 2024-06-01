@@ -2,11 +2,12 @@ using UnityEngine;
 
 public class LifeTimeDisabler : MonoBehaviour
 {
-    public float time = 0f;
+    [SerializeField]
+    float _time = 0f;
 
     public void DelayedDisable()
     {
-        Invoke("DisableObject", time);
+        Invoke("DisableObject", _time);
     }
 
     void DisableObject()

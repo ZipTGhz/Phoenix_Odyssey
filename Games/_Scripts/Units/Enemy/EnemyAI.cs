@@ -1,114 +1,110 @@
 using Pathfinding;
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour
+public abstract class EnemyAI : CustomMonoBehaviour
 {
-    //TARGET
-    Transform target;
+    protected Seeker _seeker;
+    protected Path _path;
 
-    //SYSTEM
-    Path path;
-    Seeker seeker;
-    Rigidbody2D rb;
-    public Animator animator;
-    public Transform enemyTransform;
+    [Header("TARGET")]
+    [SerializeField]
+    protected Transform _target;
 
-    //CONFIG
-    public float verticalThreshold = 0.1f;
-    public float minDistance;
-    public float maxDistance;
-    public float repeatCallback = 0.5f;
-    public float moveSpeed = 750;
-    public float nextWaypointDistance = 1f;
+    [Header("COMPONENTS")]
+    [SerializeField]
+    protected Rigidbody2D _rb;
 
-    Vector2 distanceToTarget = Vector2.positiveInfinity;
-    int currentWaypoint = 0;
+    [SerializeField]
+    protected Animator _animator;
+
+    [SerializeField]
+    protected Transform _gFXTransform;
+
+    [Header("CONFIGS")]
+    [SerializeField]
+    protected float _verticalThreshold = 0.1f;
+
+    [SerializeField]
+    protected float _minDistance;
+
+    [SerializeField]
+    protected float _maxDistance;
+
+    [SerializeField]
+    protected float _repeatCallback = 0.5f;
+
+    [SerializeField]
+    protected float _moveSpeed = 750;
+
+    [SerializeField]
+    protected float _nextWaypointDistance = 1f;
+
+    protected Vector2 _distanceToTarget = Vector2.positiveInfinity;
+    protected int _currentWaypoint = 0;
 
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
-        target = GameObject.FindGameObjectWithTag("Player").transform;
-        seeker = GetComponent<Seeker>();
-        rb = GetComponent<Rigidbody2D>();
-        InvokeRepeating("UpdatePath", 0, repeatCallback);
+        InvokeRepeating(nameof(UpdatePath), 0, _repeatCallback);
     }
 
-    void UpdatePath()
+    protected override void LoadComponents()
     {
-        if (target == null)
-            CancelInvoke("UpdatePath");
-        else if (distanceToTarget.magnitude <= maxDistance && seeker.IsDone())
-            seeker.StartPath(rb.position, target.position, OnPathCompleted);
+        base.LoadComponents();
+        _target = GameObject.FindGameObjectWithTag("Player").transform;
+        _seeker = GetComponent<Seeker>();
+        _rb = GetComponent<Rigidbody2D>();
+        _animator = GetComponentInChildren<Animator>();
+        _gFXTransform = GetComponentInChildren<Transform>();
     }
 
-    void OnPathCompleted(Path p)
+    protected virtual void UpdatePath()
+    {
+        if (_distanceToTarget.magnitude <= _maxDistance && _seeker.IsDone())
+            _seeker.StartPath(_rb.position, _target.position, OnPathCompleted);
+    }
+
+    protected virtual void OnPathCompleted(Path p)
     {
         if (p.error)
             return;
-        path = p;
-        currentWaypoint = 0;
+        _path = p;
+        _currentWaypoint = 0;
     }
 
-    void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
-        if (target == null)
+        if (_target == null)
             return;
         SetDistance();
         Move();
     }
 
-    void SetDistance()
+    protected virtual void SetDistance()
     {
-        distanceToTarget = (Vector2)target.position - rb.position;
-        animator.SetFloat("MoveSpeed", rb.velocity.magnitude);
-        animator.SetFloat("AttackRange", distanceToTarget.magnitude);
+        _distanceToTarget = (Vector2)_target.position - _rb.position;
+        _animator.SetFloat("MoveSpeed", _rb.velocity.magnitude);
+        _animator.SetFloat("AttackRange", _distanceToTarget.magnitude);
     }
 
-    void Move()
-    {
-        if (
-            path == null
-            || currentWaypoint >= path.vectorPath.Count
-            || distanceToTarget.magnitude >= maxDistance
-        )
-            return;
+    protected virtual void Move() { }
 
-        LookAtTarget();
-        // If the magnitude of the distance to the target is <= the minimum distance
-        // we move the enemy vertically
-        if (distanceToTarget.magnitude <= minDistance)
-        {
-            if (Mathf.Abs(target.position.y - rb.position.y) >= verticalThreshold)
-            {
-                Vector2 verticalDirection = new Vector2(0, target.position.y - rb.position.y);
-                verticalDirection.Normalize();
-                Vector2 verticalForce = verticalDirection * moveSpeed * Time.fixedDeltaTime;
-                rb.AddForce(verticalForce);
-            }
-        }
-        else
-        {
-            Vector2 direction = (Vector2)path.vectorPath[currentWaypoint] - rb.position;
-            direction.Normalize();
-            Vector2 force = direction * moveSpeed * Time.fixedDeltaTime;
-            rb.AddForce(force);
-            float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
-            if (distance < nextWaypointDistance)
-                ++currentWaypoint;
-        }
+    protected virtual void LookAtTarget()
+    {
+        if (_distanceToTarget.x > 0)
+            _gFXTransform.localScale = new Vector3(1, 1, 0);
+        else if (_distanceToTarget.x < 0)
+            _gFXTransform.localScale = new Vector3(-1, 1, 0);
     }
 
-    void LookAtTarget()
+    protected virtual void OnDrawGizmos()
     {
-        if (distanceToTarget.x > 0)
-            enemyTransform.localScale = new Vector3(1, 1, 0);
-        else if (distanceToTarget.x < 0)
-            enemyTransform.localScale = new Vector3(-1, 1, 0);
+        Gizmos.DrawWireSphere(transform.position, _minDistance);
+        Gizmos.DrawWireSphere(transform.position, _maxDistance);
     }
 
-    void OnDrawGizmos()
+    public void DisableUpdatePath()
     {
-        Gizmos.DrawWireSphere(transform.position, minDistance);
-        Gizmos.DrawWireSphere(transform.position, maxDistance);
+        CancelInvoke(nameof(UpdatePath));
     }
 }
